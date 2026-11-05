@@ -1,6 +1,5 @@
 package com.example.esportstracker.data
 
-import com.example.esportstracker.data.PandaScoreApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

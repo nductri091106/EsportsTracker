@@ -3,7 +3,6 @@ package com.example.esportstracker.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.esportstracker.data.AppDatabase
 import com.example.esportstracker.data.FavoriteTeamEntity

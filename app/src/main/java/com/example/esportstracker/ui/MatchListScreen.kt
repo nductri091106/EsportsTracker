@@ -38,7 +38,6 @@ import coil.compose.AsyncImage
 import com.example.esportstracker.data.TeamDto
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.TextButton
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.text.font.FontWeight
