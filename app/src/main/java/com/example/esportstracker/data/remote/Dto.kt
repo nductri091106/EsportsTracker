@@ -33,6 +33,8 @@ data class MatchDto(
     val status: String,
     @SerialName("begin_at") val beginAt: String? = null,
     @SerialName("winner_id") val winnerId: Long? = null,
+    @SerialName("number_of_games") val numberOfGames: Int? = null,
+    val tournament: TournamentDto? = null,
     val opponents: List<OpponentDto> = emptyList(),
     val results: List<ResultDto> = emptyList(),
     val league: LeagueDto? = null
@@ -64,4 +66,8 @@ data class TeamDetailDto(
 data class VideogameDto(
     val name: String? = null,
     val slug: String? = null
+)
+@Serializable
+data class TournamentDto(
+    val name: String? = null
 )

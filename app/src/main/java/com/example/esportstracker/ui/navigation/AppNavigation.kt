@@ -1,51 +1,46 @@
 package com.example.esportstracker.ui.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.esportstracker.ui.auth.AuthViewModel
-import com.example.esportstracker.ui.favorites.FavoritesScreen
 import com.example.esportstracker.ui.auth.LoginScreen
+import com.example.esportstracker.ui.auth.RegisterScreen
+import com.example.esportstracker.ui.auth.SessionState
+import com.example.esportstracker.ui.favorites.FavoritesScreen
 import com.example.esportstracker.ui.matches.MatchDetailScreen
 import com.example.esportstracker.ui.matches.MatchListScreen
+import com.example.esportstracker.ui.matches.TeamDetailScreen
 import com.example.esportstracker.ui.predictions.PredictionsScreen
 import com.example.esportstracker.ui.profile.ProfileScreen
-import com.example.esportstracker.ui.auth.RegisterScreen
 import com.example.esportstracker.ui.reminders.RemindersScreen
-import com.example.esportstracker.ui.auth.SessionState
-import com.example.esportstracker.ui.matches.TeamDetailScreen
+import com.example.esportstracker.ui.theme.AppColors
 
 @Composable
 fun AppNavigation() {
@@ -64,14 +59,6 @@ fun AppNavigation() {
 @Composable
 private fun AuthNavigation(vm: AuthViewModel) {
     val nav = rememberNavController()
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { }
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= 33) {
-            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
     NavHost(navController = nav, startDestination = "login") {
         composable("login") {
             LoginScreen(vm, onGoRegister = { nav.navigate("register") })
@@ -85,11 +72,11 @@ private fun AuthNavigation(vm: AuthViewModel) {
 private data class BottomTab(val route: String, val label: String, val icon: ImageVector)
 
 private val bottomTabs = listOf(
-    BottomTab("matches", "Trận", Icons.Filled.Home),
-    BottomTab("favorites", "Yêu thích", Icons.Filled.Favorite),
-    BottomTab("predictions", "Dự đoán", Icons.Filled.Star),
-    BottomTab("reminders", "Nhắc lịch", Icons.Filled.Notifications),
-    BottomTab("profile", "Hồ sơ", Icons.Filled.Person)
+    BottomTab("matches", "Trận", Icons.Outlined.SportsEsports),
+    BottomTab("favorites", "Yêu thích", Icons.Outlined.Favorite),
+    BottomTab("predictions", "Dự đoán", Icons.Outlined.Star),
+    BottomTab("reminders", "Nhắc lịch", Icons.Outlined.Notifications),
+    BottomTab("profile", "Hồ sơ", Icons.Outlined.Person)
 )
 
 @Composable
@@ -110,23 +97,34 @@ private fun MainNavigation(onLogout: () -> Unit) {
     val showBar = bottomTabs.any { it.route == currentRoute }
 
     Scaffold(
+        containerColor = AppColors.Background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBar) {
-                NavigationBar {
-                    bottomTabs.forEach { tab ->
-                        NavigationBarItem(
-                            selected = currentRoute == tab.route,
-                            onClick = {
-                                nav.navigate(tab.route) {
-                                    popUpTo("matches") { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(tab.icon, contentDescription = tab.label) },
-                            label = { Text(tab.label) }
-                        )
+                Column {
+                    HorizontalDivider(color = AppColors.Border)
+                    NavigationBar(containerColor = AppColors.NavBar, tonalElevation = 0.dp) {
+                        bottomTabs.forEach { tab ->
+                            NavigationBarItem(
+                                selected = currentRoute == tab.route,
+                                onClick = {
+                                    nav.navigate(tab.route) {
+                                        popUpTo("matches") { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                icon = { Icon(tab.icon, contentDescription = tab.label) },
+                                label = { Text(tab.label) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = AppColors.Primary,
+                                    selectedTextColor = AppColors.Primary,
+                                    indicatorColor = AppColors.PrimaryTint,
+                                    unselectedIconColor = AppColors.TextMuted,
+                                    unselectedTextColor = AppColors.TextMuted
+                                )
+                            )
+                        }
                     }
                 }
             }

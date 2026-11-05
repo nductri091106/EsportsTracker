@@ -17,7 +17,8 @@ interface PandaScoreApi {
     @GET("{game}/matches/past")
     suspend fun past(
         @Path("game") game: String,
-        @Query("page[size]") size: Int = 20
+        @Query("page[size]") size: Int = 20,
+        @Query("sort") sort: String = "-begin_at"
     ): List<MatchDto>
 
     @GET("matches/{id}")
