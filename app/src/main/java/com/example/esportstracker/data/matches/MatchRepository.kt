@@ -1,4 +1,7 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.matches
+
+import com.example.esportstracker.data.remote.Network
+import com.example.esportstracker.data.remote.PandaScoreApi
 
 class MatchRepository(private val api: PandaScoreApi = Network.api) {
     suspend fun upcoming(game: Game) = api.upcoming(game.slug)

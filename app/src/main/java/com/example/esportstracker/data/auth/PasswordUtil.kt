@@ -1,4 +1,4 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.auth
 
 import java.security.MessageDigest
 import java.util.UUID

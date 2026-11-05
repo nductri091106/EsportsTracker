@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.esportstracker.data.PredictionEntity
+import com.example.esportstracker.data.predictions.PredictionEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

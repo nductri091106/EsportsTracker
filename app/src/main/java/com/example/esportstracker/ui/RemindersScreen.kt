@@ -14,7 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.esportstracker.data.ReminderEntity
+import com.example.esportstracker.data.reminders.ReminderEntity
+import com.example.esportstracker.data.reminders.RemindersViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

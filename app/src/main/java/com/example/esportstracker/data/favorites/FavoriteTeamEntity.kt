@@ -1,4 +1,4 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.favorites
 
 import androidx.room.Dao
 import androidx.room.Delete

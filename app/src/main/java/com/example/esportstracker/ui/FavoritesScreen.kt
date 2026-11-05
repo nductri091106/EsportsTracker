@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.esportstracker.data.FavoriteTeamEntity
+import com.example.esportstracker.data.favorites.FavoriteTeamEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

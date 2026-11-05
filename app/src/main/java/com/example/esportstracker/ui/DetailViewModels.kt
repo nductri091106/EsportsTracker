@@ -4,12 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.esportstracker.data.AppDatabase
-import com.example.esportstracker.data.FavoriteTeamEntity
-import com.example.esportstracker.data.MatchDto
-import com.example.esportstracker.data.MatchRepository
-import com.example.esportstracker.data.SessionManager
-import com.example.esportstracker.data.TeamDetailDto
+import com.example.esportstracker.data.local.AppDatabase
+import com.example.esportstracker.data.favorites.FavoriteTeamEntity
+import com.example.esportstracker.data.remote.MatchDto
+import com.example.esportstracker.data.matches.MatchRepository
+import com.example.esportstracker.data.auth.SessionManager
+import com.example.esportstracker.data.remote.TeamDetailDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,9 +20,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import com.example.esportstracker.data.PredictionEntity
-import com.example.esportstracker.data.ReminderEntity
-import com.example.esportstracker.data.ReminderScheduler
+import com.example.esportstracker.data.predictions.PredictionEntity
+import com.example.esportstracker.data.reminders.ReminderEntity
+import com.example.esportstracker.data.reminders.ReminderScheduler
 import java.time.Instant
 
 sealed interface DetailState<out T> {

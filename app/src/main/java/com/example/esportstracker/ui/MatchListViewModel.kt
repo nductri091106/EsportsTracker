@@ -2,9 +2,9 @@ package com.example.esportstracker.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.esportstracker.data.Game
-import com.example.esportstracker.data.MatchDto
-import com.example.esportstracker.data.MatchRepository
+import com.example.esportstracker.data.matches.Game
+import com.example.esportstracker.data.remote.MatchDto
+import com.example.esportstracker.data.matches.MatchRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

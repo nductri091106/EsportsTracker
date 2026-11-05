@@ -3,11 +3,11 @@ package com.example.esportstracker.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.esportstracker.data.AppDatabase
-import com.example.esportstracker.data.PasswordUtil
-import com.example.esportstracker.data.ReminderScheduler
-import com.example.esportstracker.data.SessionManager
-import com.example.esportstracker.data.UserEntity
+import com.example.esportstracker.data.local.AppDatabase
+import com.example.esportstracker.data.auth.PasswordUtil
+import com.example.esportstracker.data.reminders.ReminderScheduler
+import com.example.esportstracker.data.auth.SessionManager
+import com.example.esportstracker.data.auth.UserEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

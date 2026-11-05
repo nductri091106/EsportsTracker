@@ -25,8 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.esportstracker.data.Game
-import com.example.esportstracker.data.MatchDto
+import com.example.esportstracker.data.matches.Game
+import com.example.esportstracker.data.remote.MatchDto
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -35,7 +35,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
-import com.example.esportstracker.data.TeamDto
+import com.example.esportstracker.data.remote.TeamDto
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.horizontalScroll

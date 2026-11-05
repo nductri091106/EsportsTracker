@@ -1,4 +1,4 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.auth
 
 sealed interface AuthResult {
     data class Success(val user: UserEntity) : AuthResult

@@ -13,15 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.esportstracker.data.MatchDto
-import com.example.esportstracker.data.PlayerDto
-import com.example.esportstracker.data.TeamDetailDto
+import com.example.esportstracker.data.remote.MatchDto
+import com.example.esportstracker.data.remote.PlayerDto
+import com.example.esportstracker.data.remote.TeamDetailDto
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.example.esportstracker.data.PredictionEntity
-import com.example.esportstracker.data.ReminderEntity
+import com.example.esportstracker.data.predictions.PredictionEntity
+import com.example.esportstracker.data.reminders.ReminderEntity
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)

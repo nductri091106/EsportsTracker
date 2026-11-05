@@ -1,4 +1,4 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,4 +1,4 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.auth
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit

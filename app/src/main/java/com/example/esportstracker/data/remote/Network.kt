@@ -1,11 +1,11 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.remote
 
+import com.example.esportstracker.BuildConfig
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.example.esportstracker.BuildConfig
 
 object Network {
     private val json = Json { ignoreUnknownKeys = true }

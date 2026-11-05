@@ -3,10 +3,10 @@ package com.example.esportstracker.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.esportstracker.data.AppDatabase
-import com.example.esportstracker.data.MatchRepository
-import com.example.esportstracker.data.PredictionEntity
-import com.example.esportstracker.data.SessionManager
+import com.example.esportstracker.data.local.AppDatabase
+import com.example.esportstracker.data.matches.MatchRepository
+import com.example.esportstracker.data.predictions.PredictionEntity
+import com.example.esportstracker.data.auth.SessionManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

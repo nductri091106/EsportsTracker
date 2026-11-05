@@ -1,9 +1,17 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.esportstracker.data.favorites.FavoriteTeamDao
+import com.example.esportstracker.data.favorites.FavoriteTeamEntity
+import com.example.esportstracker.data.predictions.PredictionDao
+import com.example.esportstracker.data.predictions.PredictionEntity
+import com.example.esportstracker.data.reminders.ReminderDao
+import com.example.esportstracker.data.reminders.ReminderEntity
+import com.example.esportstracker.data.auth.UserDao
+import com.example.esportstracker.data.auth.UserEntity
 
 @Database(
     entities = [

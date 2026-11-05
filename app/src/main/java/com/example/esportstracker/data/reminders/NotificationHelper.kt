@@ -1,4 +1,4 @@
-package com.example.esportstracker.data
+package com.example.esportstracker.data.reminders
 
 import android.Manifest
 import android.R
