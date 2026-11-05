@@ -1,4 +1,4 @@
-package com.example.esportstracker.ui
+package com.example.esportstracker.ui.reminders
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.esportstracker.data.reminders.ReminderEntity
-import com.example.esportstracker.data.reminders.RemindersViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

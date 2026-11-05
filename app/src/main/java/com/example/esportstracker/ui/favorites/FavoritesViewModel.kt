@@ -1,4 +1,4 @@
-package com.example.esportstracker.ui
+package com.example.esportstracker.ui.favorites
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

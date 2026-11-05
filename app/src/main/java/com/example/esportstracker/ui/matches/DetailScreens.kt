@@ -1,4 +1,4 @@
-package com.example.esportstracker.ui
+package com.example.esportstracker.ui.matches
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import com.example.esportstracker.data.predictions.PredictionEntity
 import com.example.esportstracker.data.reminders.ReminderEntity
+import com.example.esportstracker.ui.reminders.MinutesPicker
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)

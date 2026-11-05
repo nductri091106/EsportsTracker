@@ -1,4 +1,4 @@
-package com.example.esportstracker.ui
+package com.example.esportstracker.ui.matches
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

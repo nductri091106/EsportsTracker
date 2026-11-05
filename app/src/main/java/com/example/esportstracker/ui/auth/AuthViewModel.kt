@@ -1,4 +1,4 @@
-package com.example.esportstracker.ui
+package com.example.esportstracker.ui.auth
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

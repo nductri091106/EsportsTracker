@@ -1,4 +1,4 @@
-package com.example.esportstracker.ui
+package com.example.esportstracker.ui.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +35,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.esportstracker.ui.auth.AuthViewModel
+import com.example.esportstracker.ui.favorites.FavoritesScreen
+import com.example.esportstracker.ui.auth.LoginScreen
+import com.example.esportstracker.ui.matches.MatchDetailScreen
+import com.example.esportstracker.ui.matches.MatchListScreen
+import com.example.esportstracker.ui.predictions.PredictionsScreen
+import com.example.esportstracker.ui.profile.ProfileScreen
+import com.example.esportstracker.ui.auth.RegisterScreen
+import com.example.esportstracker.ui.reminders.RemindersScreen
+import com.example.esportstracker.ui.auth.SessionState
+import com.example.esportstracker.ui.matches.TeamDetailScreen
 
 @Composable
 fun AppNavigation() {
