@@ -328,29 +328,6 @@ private fun TeamSide(
         }
     }
 }
-
-// Giữ lại cho màn Chi tiết trận (sẽ thay ở bước 3)
-@Composable
-fun TeamColumn(team: TeamDto?, faded: Boolean = false) {
-    Column(Modifier.width(100.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        TeamBadge(
-            label = team?.acronym ?: team?.name ?: "TBD",
-            imageUrl = team?.imageUrl,
-            size = 56.dp,
-            dimmed = faded
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            team?.acronym ?: team?.name ?: "TBD",
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = AppColors.TextPrimary
-        )
-    }
-}
-
 fun matchSubtitle(m: MatchDto, scoreA: Int?, scoreB: Int?): String {
     val parts = mutableListOf<String>()
     m.tournament?.name?.takeIf { it.isNotBlank() }?.let { parts.add(it) }
