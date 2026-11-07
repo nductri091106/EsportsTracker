@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 sealed interface UiState {
     object Loading : UiState
@@ -57,7 +58,8 @@ class MatchListViewModel(
             _state.value = try {
                 val g = _game.value
                 val list = when (_filter.value) {
-                    MatchFilter.UPCOMING -> repo.running(g) + repo.upcoming(g)
+                    MatchFilter.UPCOMING ->
+                        (repo.running(g) + repo.upcoming(g)).filter { it.hasTeams() }
                     MatchFilter.RESULTS -> loadResults(g)
                 }
                 UiState.Success(list)
@@ -70,16 +72,35 @@ class MatchListViewModel(
     }
 
     private suspend fun loadResults(g: Game): List<MatchDto> {
-        // 1) Nhờ API lọc sẵn các trận đã kết thúc
-        val finished = repo.past(g, 1, "finished")
-        if (finished.isNotEmpty()) return finished
+        val collected = mutableListOf<MatchDto>()
+        var page = 1
+        while (collected.size < 10 && page <= 3) {
+            val batch = try {
+                repo.past(g, page, "finished")
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (page == 1) throw e else emptyList()
+            }
+            if (batch.isEmpty()) break
+            collected += batch.filter { it.hasTeams() && it.hasResult() }
+            page++
+        }
 
-        // 2) Không có: thử lấy tất cả rồi bỏ trận hủy/hoãn
-        val all = repo.past(g, 1)
-        val usable = all.filter { it.status != "canceled" && it.status != "postponed" }
-        if (usable.isNotEmpty()) return usable
+        // Không có trận nào đủ dữ liệu: vẫn hiện các trận đã đủ hai đội cho khỏi trống
+        val list = collected.ifEmpty {
+            repo.past(g, 1, "finished").filter { it.hasTeams() }
+        }
 
-        // 3) Vẫn không có: báo rõ nguyên nhân (tạm thời, để tìm lỗi)
-        return emptyList()
+        // Mới nhất lên trên
+        return list.distinctBy { it.id }.sortedByDescending { it.startedAt() }
     }
+
+    private fun MatchDto.hasTeams(): Boolean = opponents.size >= 2
+
+    private fun MatchDto.hasResult(): Boolean =
+        winnerId != null || results.any { (it.score ?: 0) > 0 }
+
+    private fun MatchDto.startedAt(): Long =
+        startIso?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() } ?: 0L
 }

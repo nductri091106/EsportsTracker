@@ -8,7 +8,8 @@ interface PandaScoreApi {
     @GET("{game}/matches/upcoming")
     suspend fun upcoming(
         @Path("game") game: String,
-        @Query("page[size]") size: Int = 20
+        @Query("page[size]") size: Int = 20,
+        @Query("filter[opponents_filled]") opponentsFilled: Boolean? = true
     ): List<MatchDto>
 
     @GET("{game}/matches/running")

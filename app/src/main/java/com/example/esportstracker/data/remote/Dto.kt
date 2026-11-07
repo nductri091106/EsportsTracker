@@ -27,18 +27,27 @@ data class LeagueDto(
 )
 
 @Serializable
+data class TournamentDto(
+    val name: String? = null
+)
+
+@Serializable
 data class MatchDto(
     val id: Long,
     val name: String,
     val status: String,
     @SerialName("begin_at") val beginAt: String? = null,
+    @SerialName("scheduled_at") val scheduledAt: String? = null,
+    @SerialName("end_at") val endAt: String? = null,
     @SerialName("winner_id") val winnerId: Long? = null,
     @SerialName("number_of_games") val numberOfGames: Int? = null,
     val tournament: TournamentDto? = null,
     val opponents: List<OpponentDto> = emptyList(),
     val results: List<ResultDto> = emptyList(),
     val league: LeagueDto? = null
-)
+) {
+    val startIso: String? get() = beginAt ?: scheduledAt ?: endAt
+}
 
 @Serializable
 data class PlayerDto(
@@ -52,6 +61,12 @@ data class PlayerDto(
 )
 
 @Serializable
+data class VideogameDto(
+    val name: String? = null,
+    val slug: String? = null
+)
+
+@Serializable
 data class TeamDetailDto(
     val id: Long,
     val name: String,
@@ -60,14 +75,4 @@ data class TeamDetailDto(
     @SerialName("image_url") val imageUrl: String? = null,
     @SerialName("current_videogame") val game: VideogameDto? = null,
     val players: List<PlayerDto> = emptyList()
-)
-
-@Serializable
-data class VideogameDto(
-    val name: String? = null,
-    val slug: String? = null
-)
-@Serializable
-data class TournamentDto(
-    val name: String? = null
 )

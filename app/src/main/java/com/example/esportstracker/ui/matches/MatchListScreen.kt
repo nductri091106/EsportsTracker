@@ -252,7 +252,7 @@ fun MatchCard(m: MatchDto, onClick: () -> Unit) {
             when {
                 live -> LiveChip()
                 finished -> FinishedChip()
-                else -> TimeChip(formatTime(m.beginAt))
+                else -> TimeChip(formatTime(m.startIso))
             }
         }
 
@@ -344,7 +344,7 @@ fun matchSubtitle(m: MatchDto, scoreA: Int?, scoreB: Int?): String {
     if (m.status == "running" && scoreA != null && scoreB != null) {
         parts.add("Ván ${scoreA + scoreB + 1}")
     }
-    if (m.status == "finished") formatDate(m.beginAt)?.let { parts.add(it) }
+    if (m.status == "finished") formatDate(m.startIso)?.let { parts.add(it) }
     m.numberOfGames?.let { parts.add("BO$it") }
     return parts.joinToString(" · ")
 }
