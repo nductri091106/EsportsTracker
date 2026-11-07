@@ -14,7 +14,7 @@ class AuthRepository(
     suspend fun register(username: String, password: String, displayName: String): AuthResult {
         val u = username.trim().lowercase()
         if (u.length < 3) return AuthResult.Failure("Tên đăng nhập tối thiểu 3 ký tự")
-        if (password.length < 6) return AuthResult.Failure("Mật khẩu tối thiểu 6 ký tự")
+        if (password.length < 8) return AuthResult.Failure("Mật khẩu tối thiểu 8 ký tự")
         if (displayName.isBlank()) return AuthResult.Failure("Vui lòng nhập tên hiển thị")
         if (userDao.findByUsername(u) != null) {
             return AuthResult.Failure("Tên đăng nhập đã tồn tại")
@@ -33,7 +33,7 @@ class AuthRepository(
     }
 
     suspend fun login(username: String, password: String): AuthResult {
-        val wrong = AuthResult.Failure("Sai tên đăng nhập hoặc mật khẩu")
+        val wrong = AuthResult.Failure("Tên đăng nhập hoặc mật khẩu không đúng.")
         val user = userDao.findByUsername(username.trim().lowercase()) ?: return wrong
         if (PasswordUtil.hash(password, user.salt) != user.passwordHash) return wrong
         session.save(user.id)

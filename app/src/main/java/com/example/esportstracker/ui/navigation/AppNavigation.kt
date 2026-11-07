@@ -41,6 +41,7 @@ import com.example.esportstracker.ui.predictions.PredictionsScreen
 import com.example.esportstracker.ui.profile.ProfileScreen
 import com.example.esportstracker.ui.reminders.RemindersScreen
 import com.example.esportstracker.ui.theme.AppColors
+import com.example.esportstracker.ui.profile.AccountOptionsScreen
 
 @Composable
 fun AppNavigation() {
@@ -94,7 +95,7 @@ private fun MainNavigation(onLogout: () -> Unit) {
 
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showBar = bottomTabs.any { it.route == currentRoute }
+    val showBar = bottomTabs.any { it.route == currentRoute } || currentRoute == "account"
 
     Scaffold(
         containerColor = AppColors.Background,
@@ -105,13 +106,17 @@ private fun MainNavigation(onLogout: () -> Unit) {
                     HorizontalDivider(color = AppColors.Border)
                     NavigationBar(containerColor = AppColors.NavBar, tonalElevation = 0.dp) {
                         bottomTabs.forEach { tab ->
-                            NavigationBarItem(
-                                selected = currentRoute == tab.route,
+                            NavigationBarItem(                                selected = currentRoute == tab.route ||
+                                    (tab.route == "profile" && currentRoute == "account"),
                                 onClick = {
-                                    nav.navigate(tab.route) {
-                                        popUpTo("matches") { saveState = true }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                    if (tab.route == "profile" && currentRoute == "account") {
+                                        nav.popBackStack()
+                                    } else {
+                                        nav.navigate(tab.route) {
+                                            popUpTo("matches") { saveState = true }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
                                     }
                                 },
                                 icon = { Icon(tab.icon, contentDescription = tab.label) },
@@ -148,7 +153,13 @@ private fun MainNavigation(onLogout: () -> Unit) {
                 RemindersScreen(onMatchClick = { id -> nav.navigate("match/$id") })
             }
             composable("profile") {
-                ProfileScreen(onBack = { nav.popBackStack() }, onLogout = onLogout)
+                ProfileScreen(onOpenAccountOptions = { nav.navigate("account") })
+            }
+            composable("account") {
+                AccountOptionsScreen(
+                    onBack = { nav.popBackStack() },
+                    onLogout = onLogout
+                )
             }
             composable(
                 route = "match/{matchId}",

@@ -53,8 +53,8 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
         when {
             PasswordUtil.hash(old, u.salt) != u.passwordHash ->
                 _message.value = "Mật khẩu hiện tại không đúng"
-            new.length < 6 ->
-                _message.value = "Mật khẩu mới tối thiểu 6 ký tự"
+            new.length < 8 ->
+                _message.value = "Mật khẩu mới tối thiểu 8 ký tự"
             new != confirm ->
                 _message.value = "Mật khẩu nhập lại không khớp"
             else -> viewModelScope.launch {
