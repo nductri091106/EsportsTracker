@@ -172,7 +172,8 @@ fun MatchDetailContent(
     val teamB = m.opponents.getOrNull(1)?.opponent
     val scoreA = m.results.firstOrNull { it.teamId == teamA?.id }?.score
     val scoreB = m.results.firstOrNull { it.teamId == teamB?.id }?.score
-    val hasScore = scoreA != null && scoreB != null
+    val scoreLabel = matchScoreText(m.status, scoreA, scoreB)
+    val hasScore = scoreLabel.contains(" - ")
     val finished = m.status == "finished"
 
     fun loser(team: TeamDto?) =
@@ -589,95 +590,3 @@ private fun timezoneLabel(): String {
     return if (offset == 7 * 3600) "Giờ Việt Nam (UTC+7)" else "Theo múi giờ của thiết bị"
 }
 
-// ====================== Đội tuyển (sẽ làm đẹp ở bước 4) ======================
-
-@Composable
-fun TeamDetailScreen(
-    onBack: () -> Unit,
-    vm: TeamDetailViewModel = viewModel()
-) {
-    val state by vm.state.collectAsState()
-    val isFav by vm.isFavorite.collectAsState()
-
-    DetailScaffold(
-        title = "Đội tuyển",
-        onBack = onBack,
-        state = state,
-        onRetry = { vm.load() },
-        actions = {
-            val s = state
-            if (s is DetailState.Success) {
-                IconButton(onClick = { vm.toggleFavorite(s.data) }) {
-                    Icon(
-                        imageVector = if (isFav) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = "Yêu thích",
-                        tint = AppColors.Primary
-                    )
-                }
-            }
-        }
-    ) { t -> TeamDetailContent(t) }
-}
-
-@Composable
-fun TeamDetailContent(t: TeamDetailDto) {
-    LazyColumn(
-        Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                TeamBadge(t.acronym ?: t.name, t.imageUrl, size = 96.dp)
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    t.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
-                )
-                t.acronym?.let {
-                    Text(it, style = MaterialTheme.typography.bodyMedium, color = AppColors.TextMuted)
-                }
-                t.location?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = AppColors.TextMuted)
-                }
-                Spacer(Modifier.height(16.dp))
-                SectionHeader("Tuyển thủ", trailing = "${t.players.size} thành viên")
-            }
-        }
-        if (t.players.isEmpty()) {
-            item {
-                Text(
-                    "Chưa có dữ liệu tuyển thủ",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextMuted
-                )
-            }
-        } else {
-            items(t.players, key = { it.id }) { PlayerRow(it) }
-        }
-    }
-}
-
-@Composable
-fun PlayerRow(p: PlayerDto) {
-    AppCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TeamBadge(p.name, p.imageUrl, size = 40.dp)
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text(
-                    p.name,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppColors.TextPrimary
-                )
-                val sub = listOfNotNull(p.role, p.nationality).joinToString(" · ")
-                if (sub.isNotEmpty()) {
-                    Text(sub, style = MaterialTheme.typography.bodySmall, color = AppColors.TextMuted)
-                }
-            }
-        }
-    }
-}

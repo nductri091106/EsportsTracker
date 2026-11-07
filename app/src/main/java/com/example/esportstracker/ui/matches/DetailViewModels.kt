@@ -117,7 +117,7 @@ class MatchDetailViewModel(
                 val r = ReminderEntity(
                     userId = uid,
                     matchId = match.id,
-                    title = match.name,
+                    title = matchTitle(match),
                     matchTimeMillis = time,
                     minutesBefore = minutes
                 )

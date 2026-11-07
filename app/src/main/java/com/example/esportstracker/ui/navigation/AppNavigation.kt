@@ -139,22 +139,13 @@ private fun MainNavigation(onLogout: () -> Unit) {
                 MatchListScreen(onMatchClick = { id -> nav.navigate("match/$id") })
             }
             composable("favorites") {
-                FavoritesScreen(
-                    onBack = { nav.popBackStack() },
-                    onTeamClick = { id -> nav.navigate("team/$id") }
-                )
+                FavoritesScreen(onTeamClick = { id -> nav.navigate("team/$id") })
             }
             composable("predictions") {
-                PredictionsScreen(
-                    onBack = { nav.popBackStack() },
-                    onMatchClick = { id -> nav.navigate("match/$id") }
-                )
+                PredictionsScreen(onMatchClick = { id -> nav.navigate("match/$id") })
             }
             composable("reminders") {
-                RemindersScreen(
-                    onBack = { nav.popBackStack() },
-                    onMatchClick = { id -> nav.navigate("match/$id") }
-                )
+                RemindersScreen(onMatchClick = { id -> nav.navigate("match/$id") })
             }
             composable("profile") {
                 ProfileScreen(onBack = { nav.popBackStack() }, onLogout = onLogout)

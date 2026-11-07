@@ -18,7 +18,9 @@ interface PandaScoreApi {
     suspend fun past(
         @Path("game") game: String,
         @Query("page[size]") size: Int = 20,
-        @Query("sort") sort: String = "-begin_at"
+        @Query("page[number]") page: Int = 1,
+        @Query("sort") sort: String = "-begin_at",
+        @Query("filter[status]") status: String? = null
     ): List<MatchDto>
 
     @GET("matches/{id}")

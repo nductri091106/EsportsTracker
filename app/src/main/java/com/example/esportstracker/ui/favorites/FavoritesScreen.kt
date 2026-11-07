@@ -1,26 +1,25 @@
 package com.example.esportstracker.ui.favorites
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.example.esportstracker.data.favorites.FavoriteTeamEntity
+import com.example.esportstracker.ui.components.*
+import com.example.esportstracker.ui.theme.AppColors
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
-    onBack: () -> Unit,
     onTeamClick: (Long) -> Unit,
     vm: FavoritesViewModel = viewModel()
 ) {
@@ -28,35 +27,34 @@ fun FavoritesScreen(
     var editing by remember { mutableStateOf<FavoriteTeamEntity?>(null) }
     var deleting by remember { mutableStateOf<FavoriteTeamEntity?>(null) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Đội yêu thích") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Quay lại")
+    Column(Modifier.fillMaxSize()) {
+        ScreenHeader("Đội yêu thích")
+        SectionHeader(
+            title = "Đội của bạn",
+            trailing = "${list.size} đội tuyển",
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (list.isEmpty()) {
+                StateMessage(
+                    icon = Icons.Outlined.FavoriteBorder,
+                    title = "Chưa có đội yêu thích",
+                    message = "Mở trang đội tuyển và chạm vào trái tim để theo dõi đội bạn yêu thích."
+                )
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(list, key = { it.teamId }) { f ->
+                        FavoriteCard(
+                            f = f,
+                            onClick = { onTeamClick(f.teamId) },
+                            onEdit = { editing = f },
+                            onDelete = { deleting = f }
+                        )
                     }
-                }
-            )
-        }
-    ) { padding ->
-        if (list.isEmpty()) {
-            Box(Modifier.padding(padding).fillMaxSize(), Alignment.Center) {
-                Text("Chưa có đội yêu thích.\nVào trang đội và bấm ♥ để thêm.")
-            }
-        } else {
-            LazyColumn(
-                Modifier.padding(padding).fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(list, key = { it.teamId }) { f ->
-                    FavoriteCard(
-                        f,
-                        onClick = { onTeamClick(f.teamId) },
-                        onEdit = { editing = f },
-                        onDelete = { deleting = f }
-                    )
                 }
             }
         }
@@ -71,17 +69,14 @@ fun FavoritesScreen(
     }
 
     deleting?.let { f ->
-        AlertDialog(
-            onDismissRequest = { deleting = null },
-            title = { Text("Xóa khỏi yêu thích?") },
-            text = { Text("Bạn muốn xóa ${f.name} khỏi danh sách?") },
-            confirmButton = {
-                TextButton(onClick = { vm.remove(f); deleting = null }) { Text("Xóa") }
-            },
-            dismissButton = {
-                TextButton(onClick = { deleting = null }) { Text("Hủy") }
-            }
-        )
+        AppDialog(
+            title = "Xóa khỏi yêu thích?",
+            onDismiss = { deleting = null },
+            confirmText = "Xóa",
+            onConfirm = { vm.remove(f); deleting = null }
+        ) {
+            Text("Bạn muốn xóa ${f.name} khỏi danh sách?", color = AppColors.TextMuted)
+        }
     }
 }
 
@@ -92,28 +87,62 @@ private fun FavoriteCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Card(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            AsyncImage(
-                model = f.logoUrl,
-                contentDescription = f.name,
-                modifier = Modifier.size(48.dp)
-            )
+    AppCard(onClick = onClick) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TeamBadge(f.name.substringBefore(" ").take(4), f.logoUrl, size = 48.dp)
             Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(f.name, style = MaterialTheme.typography.titleMedium)
+            Column {
+                Text(
+                    f.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.TextPrimary
+                )
                 if (f.game.isNotBlank()) {
-                    Text(f.game, style = MaterialTheme.typography.bodySmall)
-                }
-                if (f.note.isNotBlank()) {
-                    Text("Ghi chú: ${f.note}", style = MaterialTheme.typography.bodySmall, maxLines = 2)
+                    Text(
+                        gameLabel(f.game),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextMuted
+                    )
                 }
             }
-            IconButton(onClick = onEdit) {
-                Icon(Icons.Filled.Edit, contentDescription = "Sửa ghi chú")
+        }
+        if (f.note.isNotBlank()) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                f.note,
+                style = MaterialTheme.typography.bodyMedium,
+                color = AppColors.TextMuted,
+                maxLines = 3
+            )
+        }
+        Spacer(Modifier.height(4.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Outlined.FavoriteBorder,
+                    contentDescription = null,
+                    tint = AppColors.Primary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    "Đã yêu thích",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AppColors.Primary
+                )
             }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Filled.Delete, contentDescription = "Xóa")
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(Icons.Outlined.Edit, contentDescription = "Sửa ghi chú", tint = AppColors.Primary)
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Outlined.Delete, contentDescription = "Xóa", tint = AppColors.TextMuted)
+                }
             }
         }
     }
@@ -125,19 +154,33 @@ private fun NoteDialog(
     onDismiss: () -> Unit,
     onSave: (String) -> Unit
 ) {
+    val maxLength = 200
     var note by remember(item.teamId) { mutableStateOf(item.note) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Ghi chú về ${item.name}") },
-        text = {
-            OutlinedTextField(
-                value = note,
-                onValueChange = { note = it },
-                label = { Text("Ghi chú") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        confirmButton = { TextButton(onClick = { onSave(note) }) { Text("Lưu") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Hủy") } }
-    )
+
+    AppDialog(
+        title = "Ghi chú về ${item.name}",
+        onDismiss = onDismiss,
+        confirmText = "Lưu",
+        onConfirm = { onSave(note) }
+    ) {
+        Text(
+            "Lưu điều bạn muốn nhớ về đội tuyển.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColors.TextMuted
+        )
+        Spacer(Modifier.height(12.dp))
+        AppTextField(
+            value = note,
+            onValueChange = { if (it.length <= maxLength) note = it },
+            label = "Ghi chú",
+            singleLine = false,
+            minLines = 3
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "${note.length} / $maxLength ký tự",
+            style = MaterialTheme.typography.labelSmall,
+            color = AppColors.TextMuted
+        )
+    }
 }

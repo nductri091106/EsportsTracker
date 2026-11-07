@@ -8,7 +8,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 object Network {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     private val client = OkHttpClient.Builder()
         .addInterceptor { chain ->

@@ -208,7 +208,8 @@ fun MatchCard(m: MatchDto, onClick: () -> Unit) {
     val scoreB = m.results.firstOrNull { it.teamId == teamB?.id }?.score
     val live = m.status == "running"
     val finished = m.status == "finished"
-    val hasScore = scoreA != null && scoreB != null
+    val scoreLabel = matchScoreText(m.status, scoreA, scoreB)
+    val hasScore = scoreLabel.contains(" - ")
 
     fun loser(team: TeamDto?) =
         finished && team != null && m.winnerId != null && m.winnerId != team.id
@@ -263,7 +264,7 @@ fun MatchCard(m: MatchDto, onClick: () -> Unit) {
         ) {
             TeamSide(teamA, loser(teamA), logoFirst = true, modifier = Modifier.weight(1f))
             Text(
-                if (hasScore) "$scoreA - $scoreB" else "VS",
+                scoreLabel,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 fontSize = if (hasScore) 24.sp else 16.sp,
                 fontWeight = FontWeight.Bold,
@@ -326,6 +327,15 @@ private fun TeamSide(
             Spacer(Modifier.width(8.dp))
             TeamBadge(label, team?.imageUrl, size = 44.dp, dimmed = dimmed)
         }
+    }
+}
+fun matchScoreText(status: String, scoreA: Int?, scoreB: Int?): String {
+    val hasData = scoreA != null && scoreB != null &&
+            (status == "running" || !(scoreA == 0 && scoreB == 0))
+    return when {
+        hasData -> "$scoreA - $scoreB"
+        status == "finished" -> "—"
+        else -> "VS"
     }
 }
 fun matchSubtitle(m: MatchDto, scoreA: Int?, scoreB: Int?): String {

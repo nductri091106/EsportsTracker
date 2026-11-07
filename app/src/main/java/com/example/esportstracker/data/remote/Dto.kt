@@ -16,7 +16,7 @@ data class OpponentDto(val opponent: TeamDto)
 
 @Serializable
 data class ResultDto(
-    @SerialName("team_id") val teamId: Long,
+    @SerialName("team_id") val teamId: Long? = null,
     val score: Int? = null
 )
 

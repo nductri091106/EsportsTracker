@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.esportstracker.data.matches.Game
 import com.example.esportstracker.data.matches.MatchRepository
 import com.example.esportstracker.data.remote.MatchDto
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,12 +58,28 @@ class MatchListViewModel(
                 val g = _game.value
                 val list = when (_filter.value) {
                     MatchFilter.UPCOMING -> repo.running(g) + repo.upcoming(g)
-                    MatchFilter.RESULTS -> repo.past(g)
+                    MatchFilter.RESULTS -> loadResults(g)
                 }
                 UiState.Success(list)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 UiState.Error(e.message ?: "Lỗi mạng")
             }
         }
+    }
+
+    private suspend fun loadResults(g: Game): List<MatchDto> {
+        // 1) Nhờ API lọc sẵn các trận đã kết thúc
+        val finished = repo.past(g, 1, "finished")
+        if (finished.isNotEmpty()) return finished
+
+        // 2) Không có: thử lấy tất cả rồi bỏ trận hủy/hoãn
+        val all = repo.past(g, 1)
+        val usable = all.filter { it.status != "canceled" && it.status != "postponed" }
+        if (usable.isNotEmpty()) return usable
+
+        // 3) Vẫn không có: báo rõ nguyên nhân (tạm thời, để tìm lỗi)
+        return emptyList()
     }
 }
