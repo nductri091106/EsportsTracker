@@ -17,6 +17,7 @@ data class PredictionEntity(
     val predictedWinnerName: String,
     val predictedScore: String = "",
     val note: String = "",
+    val gamePicks: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )
 

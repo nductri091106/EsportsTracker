@@ -72,6 +72,7 @@ class MatchDetailViewModel(
         winnerId: Long,
         winnerName: String,
         score: String,
+        gamePicks: String,
         note: String
     ) {
         viewModelScope.launch {
@@ -87,6 +88,7 @@ class MatchDetailViewModel(
                         predictedWinnerId = winnerId,
                         predictedWinnerName = winnerName,
                         predictedScore = score.trim(),
+                        gamePicks = gamePicks,
                         note = note.trim()
                     )
                 )
@@ -96,6 +98,7 @@ class MatchDetailViewModel(
                         predictedWinnerId = winnerId,
                         predictedWinnerName = winnerName,
                         predictedScore = score.trim(),
+                        gamePicks = gamePicks,
                         note = note.trim()
                     )
                 )
@@ -108,7 +111,7 @@ class MatchDetailViewModel(
     }
 
     fun saveReminder(match: MatchDto, minutes: Int) {
-        val beginAt = match.beginAt ?: return
+        val beginAt = match.startIso ?: return
         viewModelScope.launch {
             val uid = userId.first()
             val time = Instant.parse(beginAt).toEpochMilli()

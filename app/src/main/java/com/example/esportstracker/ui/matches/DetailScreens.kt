@@ -2,21 +2,16 @@ package com.example.esportstracker.ui.matches
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,14 +22,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.example.esportstracker.data.predictions.PredictionEntity
 import com.example.esportstracker.data.reminders.ReminderEntity
 import com.example.esportstracker.data.remote.MatchDto
-import com.example.esportstracker.data.remote.PlayerDto
-import com.example.esportstracker.data.remote.TeamDetailDto
 import com.example.esportstracker.data.remote.TeamDto
 import com.example.esportstracker.ui.components.*
+import com.example.esportstracker.ui.predictions.PredictionDialog
+import com.example.esportstracker.ui.predictions.PredictionSection
 import com.example.esportstracker.ui.theme.AppColors
 import java.time.Instant
 import java.time.ZoneId
@@ -114,8 +108,8 @@ fun MatchDetailScreen(
                 match = m,
                 existing = prediction,
                 onDismiss = { showForm = false },
-                onSave = { winnerId, winnerName, score, note ->
-                    vm.savePrediction(m, winnerId, winnerName, score, note)
+                onSave = { winnerId, winnerName, score, gamePicks, note ->
+                    vm.savePrediction(m, winnerId, winnerName, score, gamePicks, note)
                     showForm = false
                 }
             )
@@ -211,7 +205,7 @@ fun MatchDetailContent(
         when (m.status) {
             "running" -> LiveChip()
             "finished" -> FinishedChip()
-            else -> TimeChip(formatTime(m.beginAt))
+            else -> TimeChip(formatTime(m.startIso))
         }
         Spacer(Modifier.height(24.dp))
 
@@ -222,7 +216,7 @@ fun MatchDetailContent(
         ) {
             TeamHero(teamA, loser(teamA), onTeamClick)
             Text(
-                if (hasScore) "$scoreA - $scoreB" else "VS",
+                scoreLabel,
                 style = if (hasScore) MaterialTheme.typography.headlineMedium
                 else MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
@@ -284,7 +278,7 @@ private fun TeamHero(team: TeamDto?, dimmed: Boolean, onClick: (Long) -> Unit) {
 }
 
 @Composable
-private fun CardTitle(icon: ImageVector, text: String) {
+fun CardTitle(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = AppColors.Primary, modifier = Modifier.size(22.dp))
         Spacer(Modifier.width(10.dp))
@@ -297,76 +291,6 @@ private fun CardTitle(icon: ImageVector, text: String) {
     }
 }
 
-// ====================== Thẻ Dự đoán ======================
-
-@Composable
-fun PredictionSection(
-    match: MatchDto,
-    prediction: PredictionEntity?,
-    onPredictClick: () -> Unit,
-    onDeleteClick: () -> Unit
-) {
-    val canPredict = match.status == "not_started" && match.opponents.size >= 2
-
-    AppCard {
-        CardTitle(Icons.Outlined.Star, "Dự đoán của bạn")
-        Spacer(Modifier.height(12.dp))
-
-        if (prediction == null) {
-            if (canPredict) {
-                Text(
-                    "Bạn nghĩ đội nào sẽ giành chiến thắng?",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextMuted
-                )
-                Spacer(Modifier.height(12.dp))
-                AppPrimaryButton("Dự đoán trận này", onPredictClick)
-            } else {
-                Text(
-                    if (match.status != "not_started") "Trận đã bắt đầu, không thể dự đoán."
-                    else "Chưa xác định đủ 2 đội.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextMuted
-                )
-            }
-        } else {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AppChip("${prediction.predictedWinnerName} thắng", AppColors.Primary, AppColors.PrimaryTint)
-                if (prediction.predictedScore.isNotBlank()) {
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        prediction.predictedScore.replace(Regex("""\s*-\s*"""), " - "),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimary
-                    )
-                }
-                if (match.status == "finished" && match.winnerId != null) {
-                    Spacer(Modifier.width(8.dp))
-                    if (match.winnerId == prediction.predictedWinnerId) {
-                        AppChip("Đúng", AppColors.Success, AppColors.SuccessTint)
-                    } else {
-                        AppChip("Sai", AppColors.Danger, AppColors.DangerTint)
-                    }
-                }
-            }
-            if (prediction.note.isNotBlank()) {
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    prediction.note,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextMuted
-                )
-            }
-            Spacer(Modifier.height(4.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                if (canPredict) AppTextAction("Sửa", onPredictClick, Icons.Outlined.Edit)
-                AppTextAction("Xóa", onDeleteClick, Icons.Outlined.Delete, AppColors.Danger)
-            }
-        }
-    }
-}
-
 // ====================== Thẻ Nhắc lịch ======================
 
 @Composable
@@ -376,7 +300,7 @@ fun ReminderSection(
     onSetClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    val canRemind = match.status == "not_started" && match.beginAt != null
+    val canRemind = match.status == "not_started" && match.startIso != null
 
     AppCard {
         CardTitle(Icons.Outlined.Notifications, "Nhắc lịch")
@@ -421,9 +345,7 @@ fun ReminderSection(
     }
 }
 
-// ====================== Hộp thoại ======================
-
-private val scoreRegex = Regex("""\d+\s*-\s*\d+""")
+// ====================== Hộp thoại Nhắc lịch ======================
 
 @Composable
 private fun RadioRow(label: String, selected: Boolean, onClick: () -> Unit) {
@@ -447,80 +369,6 @@ private fun RadioRow(label: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun PredictionDialog(
-    match: MatchDto,
-    existing: PredictionEntity?,
-    onDismiss: () -> Unit,
-    onSave: (winnerId: Long, winnerName: String, score: String, note: String) -> Unit
-) {
-    val teams = match.opponents.map { it.opponent }
-    var winnerId by remember { mutableStateOf(existing?.predictedWinnerId) }
-    var score by remember { mutableStateOf(existing?.predictedScore ?: "") }
-    var note by remember { mutableStateOf(existing?.note ?: "") }
-    var winnerError by remember { mutableStateOf(false) }
-    var scoreError by remember { mutableStateOf(false) }
-
-    AppDialog(
-        title = "Dự đoán trận này",
-        onDismiss = onDismiss,
-        confirmText = "Lưu",
-        onConfirm = {
-            val w = teams.firstOrNull { it.id == winnerId }
-            winnerError = w == null
-            scoreError = score.isNotBlank() && !scoreRegex.matches(score.trim())
-            if (w != null && !scoreError) {
-                onSave(w.id, w.acronym ?: w.name, score, note)
-            }
-        }
-    ) {
-        Column(
-            Modifier.verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                "${matchTitle(match)} · ${match.league?.name ?: ""}",
-                style = MaterialTheme.typography.bodySmall,
-                color = AppColors.TextMuted
-            )
-            Text(
-                "Đội chiến thắng",
-                style = MaterialTheme.typography.labelMedium,
-                color = AppColors.TextMuted
-            )
-            teams.forEach { t ->
-                RadioRow(label = t.acronym ?: t.name, selected = winnerId == t.id) {
-                    winnerId = t.id
-                    winnerError = false
-                }
-            }
-            if (winnerError) {
-                Text(
-                    "Hãy chọn đội thắng",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = AppColors.Danger
-                )
-            }
-            AppTextField(
-                value = score,
-                onValueChange = { score = it; scoreError = false },
-                label = "Tỉ số dự đoán",
-                placeholder = "vd 2-1",
-                error = scoreError,
-                helper = if (scoreError) "Tỉ số phải có dạng 2-1" else "Nhập tỉ số, vd 2-1"
-            )
-            AppTextField(
-                value = note,
-                onValueChange = { note = it },
-                label = "Ghi chú",
-                placeholder = "Ghi chú (không bắt buộc)",
-                singleLine = false,
-                minLines = 3
-            )
-        }
-    }
-}
-
-@Composable
 fun ReminderDialog(
     match: MatchDto,
     existing: ReminderEntity?,
@@ -528,7 +376,9 @@ fun ReminderDialog(
     onSave: (Int) -> Unit
 ) {
     var minutes by remember { mutableStateOf(existing?.minutesBefore ?: 15) }
-    val beginMs = remember(match.beginAt) { match.beginAt?.let { Instant.parse(it).toEpochMilli() } }
+    val beginMs = remember(match.startIso) {
+        match.startIso?.let { Instant.parse(it).toEpochMilli() }
+    }
     val triggerMs = beginMs?.minus(minutes * 60_000L)
     val tooLate = triggerMs == null || triggerMs <= System.currentTimeMillis()
 
@@ -589,4 +439,3 @@ private fun timezoneLabel(): String {
     val offset = ZoneId.systemDefault().rules.getOffset(Instant.now()).totalSeconds
     return if (offset == 7 * 3600) "Giờ Việt Nam (UTC+7)" else "Theo múi giờ của thiết bị"
 }
-

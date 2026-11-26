@@ -208,7 +208,9 @@ private fun PredictionCard(item: PredictionItem, onClick: () -> Unit, onDelete: 
             Text(
                 buildString {
                     append("Bạn chọn: ${p.predictedWinnerName}")
-                    if (p.predictedScore.isNotBlank()) append(" (${p.predictedScore})")
+                    if (p.predictedScore.isNotBlank() && !p.isSingleGame()) {
+                        append(" (${p.predictedScore})")
+                    }
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextMuted
