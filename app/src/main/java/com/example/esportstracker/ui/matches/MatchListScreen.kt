@@ -44,14 +44,8 @@ fun MatchListScreen(
     val game by vm.game.collectAsState()
     val filter by vm.filter.collectAsState()
 
-    Column(Modifier.fillMaxSize().statusBarsPadding()) {
-        Text(
-            "ESPORTS TRACKER",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = AppColors.TextPrimary,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp)
-        )
+    Column(Modifier.fillMaxSize()) {
+        ScreenHeader("ESPORTS TRACKER")
 
         GameTabs(selected = game, onSelect = { vm.selectGame(it) })
 

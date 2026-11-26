@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.esportstracker.data.predictions.PredictionEntity
 import com.example.esportstracker.ui.components.*
 import com.example.esportstracker.ui.theme.AppColors
+import androidx.compose.material.icons.filled.Refresh
 
 private const val PAGE_SIZE = 3
 
@@ -47,7 +48,7 @@ fun PredictionsScreen(
     val wrong = items.count { it.outcome == Outcome.WRONG }
 
     Column(Modifier.fillMaxSize()) {
-        ScreenHeader("Dự đoán của tôi", actionText = "Làm mới", onAction = { vm.refresh() })
+        ScreenHeader("Dự đoán của tôi")
 
         Box(Modifier.weight(1f).fillMaxWidth()) {
             if (items.isEmpty()) {
@@ -65,7 +66,20 @@ fun PredictionsScreen(
                     item {
                         SectionHeader(
                             title = if (currentPage == 0) "Dự đoán gần đây" else "Các dự đoán tiếp theo",
-                            trailing = "${from + 1}–${from + pageItems.size} / ${items.size}"
+                            trailing = "${from + 1}–${from + pageItems.size} / ${items.size}",
+                            action = {
+                                IconButton(
+                                    onClick = { vm.refresh() },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Refresh,
+                                        contentDescription = "Làm mới",
+                                        tint = AppColors.Primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
                         )
                     }
                     items(pageItems, key = { it.prediction.matchId }) { item ->

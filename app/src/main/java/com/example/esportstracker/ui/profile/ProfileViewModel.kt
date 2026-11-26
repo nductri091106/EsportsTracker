@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import android.net.Uri
+import com.example.esportstracker.data.auth.AvatarStore
 
 data class ProfileStats(
     val favorites: Int = 0,
@@ -94,6 +96,20 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun setAvatar(uri: Uri) {
+        viewModelScope.launch {
+            val ok = AvatarStore.save(getApplication<Application>(), userId.first(), uri)
+            _message.value = if (ok) "Đã cập nhật ảnh đại diện" else "Không thể dùng ảnh này"
+        }
+    }
+
+    fun removeAvatar() {
+        viewModelScope.launch {
+            AvatarStore.delete(getApplication<Application>(), userId.first())
+            _message.value = "Đã xóa ảnh đại diện"
+        }
+    }
+
     fun deleteAccount() {
         val u = _user.value ?: return
         viewModelScope.launch {
@@ -102,6 +118,7 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
             db.reminderDao().deleteAll(u.id)
             db.predictionDao().deleteAll(u.id)
             db.favoriteTeamDao().deleteAll(u.id)
+            AvatarStore.delete(ctx, u.id)
             db.userDao().delete(u)
             session.clear()
         }

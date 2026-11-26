@@ -44,14 +44,17 @@ fun RemindersScreen(
     var deleting by remember { mutableStateOf<ReminderEntity?>(null) }
 
     Column(Modifier.fillMaxSize()) {
-        ScreenHeader("Nhắc lịch", actionText = "Gửi thử", onAction = { vm.sendTest() })
+        ScreenHeader("Nhắc lịch")
 
         Box(Modifier.weight(1f).fillMaxWidth()) {
             if (list.isEmpty()) {
                 StateMessage(
                     icon = Icons.Outlined.Notifications,
                     title = "Chưa có nhắc lịch nào",
-                    message = "Mở một trận chưa bắt đầu để đặt lời nhắc."
+                    message = "Mở một trận chưa bắt đầu để đặt lời nhắc.",
+                    actionText = "Gửi thông báo thử",
+                    actionIcon = Icons.Outlined.Notifications,
+                    onAction = { vm.sendTest() }
                 )
             } else {
                 val enabledCount = list.count { it.enabled && triggerAt(it) > System.currentTimeMillis() }
@@ -63,7 +66,8 @@ fun RemindersScreen(
                         SectionHeader(
                             title = "Lời nhắc của bạn",
                             trailing = "$enabledCount đang bật",
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            modifier = Modifier.padding(bottom = 4.dp),
+                            action = { AppTextAction("Gửi thử", { vm.sendTest() }) }
                         )
                     }
                     items(list, key = { it.id }) { r ->

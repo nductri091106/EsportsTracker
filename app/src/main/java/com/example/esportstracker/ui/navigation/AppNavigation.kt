@@ -41,6 +41,7 @@ import com.example.esportstracker.ui.predictions.PredictionsScreen
 import com.example.esportstracker.ui.profile.ProfileScreen
 import com.example.esportstracker.ui.reminders.RemindersScreen
 import com.example.esportstracker.ui.theme.AppColors
+import com.example.esportstracker.ui.components.LocalOpenProfile
 
 @Composable
 fun AppNavigation() {
@@ -75,8 +76,7 @@ private val bottomTabs = listOf(
     BottomTab("matches", "Trận", Icons.Outlined.SportsEsports),
     BottomTab("favorites", "Yêu thích", Icons.Outlined.Favorite),
     BottomTab("predictions", "Dự đoán", Icons.Outlined.Star),
-    BottomTab("reminders", "Nhắc lịch", Icons.Outlined.Notifications),
-    BottomTab("profile", "Hồ sơ", Icons.Outlined.Person)
+    BottomTab("reminders", "Nhắc lịch", Icons.Outlined.Notifications)
 )
 
 @Composable
@@ -104,68 +104,78 @@ private fun MainNavigation(onLogout: () -> Unit) {
         }
     }
 
-    Scaffold(
-        containerColor = AppColors.Background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = {
-            if (showBar) {
-                Column {
-                    HorizontalDivider(color = AppColors.Border)
-                    NavigationBar(containerColor = AppColors.NavBar, tonalElevation = 0.dp) {
-                        bottomTabs.forEach { tab ->
-                            NavigationBarItem(
-                                selected = currentRoute == tab.route,
-                                onClick = { goToTab(tab.route) },
-                                icon = { Icon(tab.icon, contentDescription = tab.label) },
-                                label = { Text(tab.label) },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = AppColors.Primary,
-                                    selectedTextColor = AppColors.Primary,
-                                    indicatorColor = AppColors.PrimaryTint,
-                                    unselectedIconColor = AppColors.TextMuted,
-                                    unselectedTextColor = AppColors.TextMuted
+    CompositionLocalProvider(
+        LocalOpenProfile provides {
+            if (currentRoute != "profile") nav.navigate("profile")
+        }
+    ) {
+        Scaffold(
+            containerColor = AppColors.Background,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            bottomBar = {
+                if (showBar) {
+                    Column {
+                        HorizontalDivider(color = AppColors.Border)
+                        NavigationBar(containerColor = AppColors.NavBar, tonalElevation = 0.dp) {
+                            bottomTabs.forEach { tab ->
+                                NavigationBarItem(
+                                    selected = currentRoute == tab.route,
+                                    onClick = { goToTab(tab.route) },
+                                    icon = { Icon(tab.icon, contentDescription = tab.label) },
+                                    label = { Text(tab.label) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = AppColors.Primary,
+                                        selectedTextColor = AppColors.Primary,
+                                        indicatorColor = AppColors.PrimaryTint,
+                                        unselectedIconColor = AppColors.TextMuted,
+                                        unselectedTextColor = AppColors.TextMuted
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
             }
-        }
-    ) { inner ->
-        NavHost(
-            navController = nav,
-            startDestination = "matches",
-            modifier = Modifier.padding(inner).consumeWindowInsets(inner)
-        ) {
-            composable("matches") {
-                MatchListScreen(onMatchClick = { id -> nav.navigate("match/$id") })
-            }
-            composable("favorites") {
-                FavoritesScreen(onTeamClick = { id -> nav.navigate("team/$id") })
-            }
-            composable("predictions") {
-                PredictionsScreen(onMatchClick = { id -> nav.navigate("match/$id") })
-            }
-            composable("reminders") {
-                RemindersScreen(onMatchClick = { id -> nav.navigate("match/$id") })
-            }
-            composable("profile") {
-                ProfileScreen(onOpenTab = goToTab, onLogout = onLogout)
-            }
-            composable(
-                route = "match/{matchId}",
-                arguments = listOf(navArgument("matchId") { type = NavType.LongType })
+        ) { inner ->
+            NavHost(
+                navController = nav,
+                startDestination = "matches",
+                modifier = Modifier.padding(inner).consumeWindowInsets(inner)
             ) {
-                MatchDetailScreen(
-                    onBack = { nav.popBackStack() },
-                    onTeamClick = { id -> nav.navigate("team/$id") }
-                )
-            }
-            composable(
-                route = "team/{teamId}",
-                arguments = listOf(navArgument("teamId") { type = NavType.LongType })
-            ) {
-                TeamDetailScreen(onBack = { nav.popBackStack() })
+                composable("matches") {
+                    MatchListScreen(onMatchClick = { id -> nav.navigate("match/$id") })
+                }
+                composable("favorites") {
+                    FavoritesScreen(onTeamClick = { id -> nav.navigate("team/$id") })
+                }
+                composable("predictions") {
+                    PredictionsScreen(onMatchClick = { id -> nav.navigate("match/$id") })
+                }
+                composable("reminders") {
+                    RemindersScreen(onMatchClick = { id -> nav.navigate("match/$id") })
+                }
+                composable("profile") {
+                    ProfileScreen(
+                        onBack = { nav.popBackStack() },
+                        onOpenTab = goToTab,
+                        onLogout = onLogout
+                    )
+                }
+                composable(
+                    route = "match/{matchId}",
+                    arguments = listOf(navArgument("matchId") { type = NavType.LongType })
+                ) {
+                    MatchDetailScreen(
+                        onBack = { nav.popBackStack() },
+                        onTeamClick = { id -> nav.navigate("team/$id") }
+                    )
+                }
+                composable(
+                    route = "team/{teamId}",
+                    arguments = listOf(navArgument("teamId") { type = NavType.LongType })
+                ) {
+                    TeamDetailScreen(onBack = { nav.popBackStack() })
+                }
             }
         }
     }

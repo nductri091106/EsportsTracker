@@ -320,13 +320,14 @@ fun ScreenHeader(
     title: String,
     modifier: Modifier = Modifier,
     actionText: String? = null,
-    onAction: (() -> Unit)? = null
+    onAction: (() -> Unit)? = null,
+    showAvatar: Boolean = true
 ) {
     Row(
         modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 8.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -336,14 +337,25 @@ fun ScreenHeader(
             fontWeight = FontWeight.Bold,
             color = AppColors.TextPrimary
         )
-        if (actionText != null && onAction != null) {
-            AppTextAction(actionText, onAction)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (actionText != null && onAction != null) {
+                AppTextAction(actionText, onAction)
+            }
+            if (showAvatar) {
+                Spacer(Modifier.width(8.dp))
+                HeaderAvatar()
+            }
         }
     }
 }
 
 @Composable
-fun SectionHeader(title: String, modifier: Modifier = Modifier, trailing: String? = null) {
+fun SectionHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    trailing: String? = null,
+    action: (@Composable () -> Unit)? = null
+) {
     Row(
         modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -355,8 +367,14 @@ fun SectionHeader(title: String, modifier: Modifier = Modifier, trailing: String
             fontWeight = FontWeight.SemiBold,
             color = AppColors.TextPrimary
         )
-        if (trailing != null) {
-            Text(trailing, style = MaterialTheme.typography.bodySmall, color = AppColors.TextMuted)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (trailing != null) {
+                Text(trailing, style = MaterialTheme.typography.bodySmall, color = AppColors.TextMuted)
+            }
+            if (action != null) {
+                Spacer(Modifier.width(4.dp))
+                action()
+            }
         }
     }
 }

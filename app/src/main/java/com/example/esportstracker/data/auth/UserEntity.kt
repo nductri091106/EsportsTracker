@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Delete
+import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "users", indices = [Index(value = ["username"], unique = true)])
 data class UserEntity(
@@ -35,4 +36,7 @@ interface UserDao {
 
     @Delete
     suspend fun delete(user: UserEntity)
+
+    @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
+    fun observeById(id: Long): Flow<UserEntity?>
 }
