@@ -41,7 +41,6 @@ import com.example.esportstracker.ui.predictions.PredictionsScreen
 import com.example.esportstracker.ui.profile.ProfileScreen
 import com.example.esportstracker.ui.reminders.RemindersScreen
 import com.example.esportstracker.ui.theme.AppColors
-import com.example.esportstracker.ui.profile.AccountOptionsScreen
 
 @Composable
 fun AppNavigation() {
@@ -95,7 +94,15 @@ private fun MainNavigation(onLogout: () -> Unit) {
 
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showBar = bottomTabs.any { it.route == currentRoute } || currentRoute == "account"
+    val showBar = bottomTabs.any { it.route == currentRoute }
+
+    val goToTab: (String) -> Unit = { route ->
+        nav.navigate(route) {
+            popUpTo("matches") { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     Scaffold(
         containerColor = AppColors.Background,
@@ -106,19 +113,9 @@ private fun MainNavigation(onLogout: () -> Unit) {
                     HorizontalDivider(color = AppColors.Border)
                     NavigationBar(containerColor = AppColors.NavBar, tonalElevation = 0.dp) {
                         bottomTabs.forEach { tab ->
-                            NavigationBarItem(                                selected = currentRoute == tab.route ||
-                                    (tab.route == "profile" && currentRoute == "account"),
-                                onClick = {
-                                    if (tab.route == "profile" && currentRoute == "account") {
-                                        nav.popBackStack()
-                                    } else {
-                                        nav.navigate(tab.route) {
-                                            popUpTo("matches") { saveState = true }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    }
-                                },
+                            NavigationBarItem(
+                                selected = currentRoute == tab.route,
+                                onClick = { goToTab(tab.route) },
                                 icon = { Icon(tab.icon, contentDescription = tab.label) },
                                 label = { Text(tab.label) },
                                 colors = NavigationBarItemDefaults.colors(
@@ -153,13 +150,7 @@ private fun MainNavigation(onLogout: () -> Unit) {
                 RemindersScreen(onMatchClick = { id -> nav.navigate("match/$id") })
             }
             composable("profile") {
-                ProfileScreen(onOpenAccountOptions = { nav.navigate("account") })
-            }
-            composable("account") {
-                AccountOptionsScreen(
-                    onBack = { nav.popBackStack() },
-                    onLogout = onLogout
-                )
+                ProfileScreen(onOpenTab = goToTab, onLogout = onLogout)
             }
             composable(
                 route = "match/{matchId}",
